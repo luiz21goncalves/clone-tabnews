@@ -1,0 +1,11 @@
+{
+  "name": "clone-tabnews",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:luiz21goncalves/clone-tabnews.git",
+  "author": "Luiz Gonçalves <luizhbgoncalves@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
