@@ -11,7 +11,16 @@ test("POST /api/v1/migrations should return 200", async () => {
     method: "POST",
   });
   const responseBody = await response.json();
+  const responseMigrationsNames = responseBody.map(
+    (migration) => migration.name
+  );
+
+  const migrationsResult = await database.query("SELECT * FROM pgmigrations");
+  const migrations = migrationsResult.rows;
+  const migrationsNames = migrations.map((migration) => migration.name);
 
   expect(response.status).toBe(200);
   expect(Array.isArray(responseBody)).toBe(true);
+  expect(responseBody.length).toBe(migrations.length);
+  expect(responseMigrationsNames).toStrictEqual(migrationsNames);
 });
