@@ -2,30 +2,32 @@ import path from "node:path";
 import migrationRunner from "node-pg-migrate";
 
 export default async function handle(request, response) {
-  if (request.method === "GET") {
-    const migrations = await migrationRunner({
-      databaseUrl: process.env.DATABASE_URL,
-      dryRun: false,
-      dir: path.join("infra", "migrations"),
-      direction: "up",
-      verbose: true,
-      migrationsTable: "pgmigrations",
-    });
+  const defaultMigrationOptions = {
+    databaseUrl: process.env.DATABASE_URL,
+    dryRun: true,
+    dir: path.join("infra", "migrations"),
+    direction: "up",
+    verbose: true,
+    migrationsTable: "pgmigrations",
+  };
 
-    return response.status(200).json(migrations);
+  if (request.method === "GET") {
+    const pendingMigrations = await migrationRunner(defaultMigrationOptions);
+
+    return response.status(200).json(pendingMigrations);
   }
 
   if (request.method === "POST") {
-    const migrations = await migrationRunner({
-      databaseUrl: process.env.DATABASE_URL,
+    const migratedMigrations = await migrationRunner({
+      ...defaultMigrationOptions,
       dryRun: false,
-      dir: path.join("infra", "migrations"),
-      direction: "up",
-      verbose: true,
-      migrationsTable: "pgmigrations",
     });
 
-    return response.status(200).json(migrations);
+    if (migratedMigrations.length > 0) {
+      return response.status(201).json(migratedMigrations);
+    }
+
+    return response.status(200).json(migratedMigrations);
   }
 
   return response.status(405).end();
