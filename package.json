@@ -6,9 +6,11 @@
   "author": "Luiz Gonçalves <luizhbgoncalves@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && trap \"echo\" INT TERM && next dev",
+    "predev": "npm run services:up && npm run services:wait:database && npm run migrations:up",
+    "dev": "trap \"echo\" INT TERM && next dev",
     "postdev": "npm run services:stop",
-    "test": "npm run services:up && concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand --verbose\"",
+    "pretest": "npm run services:up",
+    "test": "concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand --verbose\"",
     "posttest": "npm run services:stop",
     "test:watch": "jest --watchAll --runInBand",
     "services:up": "docker compose -f infra/compose.yml up -d",
