@@ -4,20 +4,24 @@ beforeAll(async () => {
   await orchestrator.waitForAllServices();
 });
 
-test("GET to /api/v1/status should return 200", async () => {
-  const response = await fetch("http://localhost:3000/api/v1/status");
-  const responseBody = await response.json();
+describe("GET /api/v1/status", () => {
+  describe("Anonymous user", () => {
+    test("Retrieving current system status", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/status");
+      const responseBody = await response.json();
 
-  const parsedUpdatedAt = new Date(responseBody.updated_at).toISOString();
+      const parsedUpdatedAt = new Date(responseBody.updated_at).toISOString();
 
-  expect(responseBody).toEqual({
-    updated_at: parsedUpdatedAt,
-    dependencies: {
-      database: {
-        version: "16.0",
-        max_connections: 100,
-        opened_connections: 1,
-      },
-    },
+      expect(responseBody).toEqual({
+        updated_at: parsedUpdatedAt,
+        dependencies: {
+          database: {
+            version: "16.0",
+            max_connections: 100,
+            opened_connections: 1,
+          },
+        },
+      });
+    });
   });
 });
