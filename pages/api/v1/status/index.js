@@ -7,7 +7,7 @@ export default async function handle(request, response) {
   const databaseVersionValue = databaseVersionResult.rows[0].server_version;
 
   const databaseMaxConnectionsResult = await database.query(
-    "SHOW max_connections;"
+    "SHOW max_connections;",
   );
   const databaseMaxConnections =
     databaseMaxConnectionsResult.rows[0].max_connections;
