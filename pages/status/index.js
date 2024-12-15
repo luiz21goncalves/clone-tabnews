@@ -7,33 +7,48 @@ async function fetchApi(key) {
   return responseBody;
 }
 
+function DatabaseStatus() {
+  const { data, isLoading } = useSWR("/api/v1/status", fetchApi, {
+    refreshInterval: 2000,
+  });
+
+  if (isLoading) {
+    return <p>Carregando...</p>;
+  }
+
+  if (!data) {
+    return (
+      <>
+        <h2>Database</h2>
+        <p>Não foi possível obter dados.</p>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <h2>Database</h2>
+      <div>
+        <p>Versão: {data.dependencies.database.version}</p>
+        <p>Conexões abertas: {data.dependencies.database.opened_connections}</p>
+        <p>Conexões máximas: {data.dependencies.database.max_connections}</p>
+      </div>
+    </>
+  );
+}
+
 function UpdatedAt() {
   const { data, isLoading } = useSWR("/api/v1/status", fetchApi, {
     refreshInterval: 2000,
   });
 
   if (isLoading) {
-    return "Carregando...";
+    return <p>Carregando...</p>;
   }
 
-  let formattedDate = new Date(data.updated_at).toLocaleString("pt-BR");
+  const formattedDate = new Date(data.updated_at).toLocaleString("pt-BR");
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <h2>Última atualização: {formattedDate}</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <strong>Banco de Dados</strong>
-        <span>Status: healthy</span>
-        <span>
-          Conexões disponíveis: {data.dependencies.database.max_connections}
-        </span>
-        <span>
-          Conexões abertas: {data.dependencies.database.opened_connections}
-        </span>
-        <span>Versão do PostgreSQL: {data.dependencies.database.version}</span>
-      </div>
-    </div>
-  );
+  return <p>Última atualização: {formattedDate}</p>;
 }
 
 export default function StatusPage() {
@@ -41,6 +56,7 @@ export default function StatusPage() {
     <>
       <h1>Status</h1>
       <UpdatedAt />
+      <DatabaseStatus />
     </>
   );
 }
