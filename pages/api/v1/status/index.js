@@ -33,7 +33,7 @@ export default async function handle(request, response) {
     });
   } catch (error) {
     const publicErrorObject = new InternalServerError({ cause: error });
-    console.log(publicErrorObject);
+    console.error(publicErrorObject);
 
     return response
       .status(publicErrorObject.statusCode)
