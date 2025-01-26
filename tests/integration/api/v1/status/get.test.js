@@ -10,6 +10,8 @@ describe("GET /api/v1/status", () => {
       const response = await fetch("http://localhost:3000/api/v1/status");
       const responseBody = await response.json();
 
+      expect(response.status).toEqual(200);
+
       const parsedUpdatedAt = new Date(responseBody.updated_at).toISOString();
 
       expect(responseBody).toEqual({
