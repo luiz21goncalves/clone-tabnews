@@ -38,9 +38,9 @@ describe("GET /api/v1/users/[username]", () => {
         id: expect.any(String),
         username: "MesmoCase",
         email: "mesmo.case@gmail.com",
-        password: "senha123",
-        created_at: expect.any(String),
-        updated_at: expect.any(String),
+        password: getUserBody.password,
+        created_at: getUserBody.created_at,
+        updated_at: getUserBody.updated_at,
       });
       expect(uuidVersion(getUserBody.id)).toBe(4);
       expect(Date.parse(getUserBody.created_at)).not.toBeNaN();
@@ -75,9 +75,9 @@ describe("GET /api/v1/users/[username]", () => {
         id: expect.any(String),
         username: "CaseDiferente",
         email: "case.diferente@gmail.com",
-        password: "senha123",
-        created_at: expect.any(String),
-        updated_at: expect.any(String),
+        password: getUserBody.password,
+        created_at: getUserBody.created_at,
+        updated_at: getUserBody.updated_at,
       });
       expect(uuidVersion(getUserBody.id)).toBe(4);
       expect(Date.parse(getUserBody.created_at)).not.toBeNaN();
