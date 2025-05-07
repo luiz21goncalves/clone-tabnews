@@ -54,41 +54,23 @@ describe("POST /api/v1/users", () => {
     });
 
     test("With duplicated 'email'", async () => {
-      const responseWithValidUser = await fetch(
-        "http://localhost:3000/api/v1/users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: "email_duplicado_1",
-            email: "duplicado@gmail.com",
-            password: "senha123",
-          }),
+      await orchestrator.createUser({ email: "duplicado@gmail.com" });
+
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          username: "email_duplicado_2",
+          email: "Duplicado@gmail.com",
+          password: "senha123",
+        }),
+      });
+      const body = await response.json();
 
-      expect(responseWithValidUser.status).toBe(201);
-
-      const responseWithInvalidUser = await fetch(
-        "http://localhost:3000/api/v1/users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: "email_duplicado_2",
-            email: "Duplicado@gmail.com",
-            password: "senha123",
-          }),
-        },
-      );
-      const bodyWithInvalidUser = await responseWithInvalidUser.json();
-
-      expect(responseWithInvalidUser.status).toBe(400);
-      expect(bodyWithInvalidUser).toEqual({
+      expect(response.status).toBe(400);
+      expect(body).toEqual({
         status_code: 400,
         message: "O email informado já está sendo utilizado.",
         action: "Utilize outro email para realizar esta operação.",
@@ -97,41 +79,23 @@ describe("POST /api/v1/users", () => {
     });
 
     test("With duplicated 'username'", async () => {
-      const responseWithValidUser = await fetch(
-        "http://localhost:3000/api/v1/users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: "username_duplicado",
-            email: "username_duplicado_1@gmail.com",
-            password: "senha123",
-          }),
+      await orchestrator.createUser({ username: "username_duplicado" });
+
+      const response = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          username: "Username_Duplicado",
+          email: "username_duplicado_2@gmail.com",
+          password: "senha123",
+        }),
+      });
+      const body = await response.json();
 
-      expect(responseWithValidUser.status).toBe(201);
-
-      const responseWithInvalidUser = await fetch(
-        "http://localhost:3000/api/v1/users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: "Username_Duplicado",
-            email: "username_duplicado_2@gmail.com",
-            password: "senha123",
-          }),
-        },
-      );
-      const bodyWithInvalidUser = await responseWithInvalidUser.json();
-
-      expect(responseWithInvalidUser.status).toBe(400);
-      expect(bodyWithInvalidUser).toEqual({
+      expect(response.status).toBe(400);
+      expect(body).toEqual({
         status_code: 400,
         message: "O username informado já está sendo utilizado.",
         action: "Utilize outro username para realizar esta operação.",
