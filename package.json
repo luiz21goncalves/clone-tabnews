@@ -5,6 +5,9 @@
   "repository": "git@github.com:luiz21goncalves/clone-tabnews.git",
   "author": "Luiz Gonçalves <luizhbgoncalves@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "predev": "npm run services:up && npm run services:wait:database && npm run migrations:up",
     "dev": "trap \"echo\" INT TERM && next dev",
