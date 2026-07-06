@@ -2,6 +2,7 @@ import database from "infra/database.js";
 import email from "infra/email.js";
 import { NotFoundError } from "infra/errors";
 import webserver from "infra/webserver.js";
+import user from "./user";
 
 const EXPIRATION_IN_MILLISECONDS = 1000 * 60 * 15; // 15 minutes
 
@@ -32,7 +33,7 @@ async function sendEmailToUser(user, activationToken) {
     from: "Clone TabNews <contato@clone.tabnews.com.br>",
     to: user.email,
     subject: "Ative seu cadastro no Clone TabNews!",
-    text: `${user.username}, clique no link abaico para ativar cadastro no  Clone TabNews:
+    text: `${user.username}, clique no link abaixo para ativar cadastro no  Clone TabNews:
 
 ${webserver.origin}/cadastro/ativar/${activationToken.id}
 
@@ -65,15 +66,50 @@ async function findOneValidById(tokenId) {
 
     if (results.rowCount === 0) {
       throw new NotFoundError({
-        message: 'O token de ativação utilizado não foi encontrado no sistema ou expirou.',
-        action: 'Faça um novo cadastro.'
-      })
+        message:
+          "O token de ativação utilizado não foi encontrado no sistema ou expirou.",
+        action: "Faça um novo cadastro.",
+      });
     }
 
     return results.rows[0];
   }
 }
 
-const activation = { sendEmailToUser, create, findOneValidById };
+async function markTokenAsUsed(activationTokenId) {
+  const usedActivationToken = await runUpdateQuery(activationTokenId);
+  return usedActivationToken;
+
+  async function runUpdateQuery(activationTokenId) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          user_activation_tokens
+        SET
+          used_at = timezone('utc', now()),
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+      `,
+      values: [activationTokenId],
+    });
+
+    return results.rows[0];
+  }
+}
+async function activateUserByUserId(userId) {
+  const activatedUser = await user.setFeatures(userId, ["create:session"]);
+  return activatedUser;
+}
+
+const activation = {
+  sendEmailToUser,
+  create,
+  findOneValidById,
+  markTokenAsUsed,
+  activateUserByUserId,
+};
 
 export default activation;
